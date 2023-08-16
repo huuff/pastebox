@@ -1,8 +1,10 @@
 package main
 
 import (
-  "log"
-  "net/http"
+	"log"
+	"net/http"
+	"strconv"
+  "fmt"
 )
 
 func home(w http.ResponseWriter, r *http.Request) {
@@ -15,13 +17,20 @@ func home(w http.ResponseWriter, r *http.Request) {
 }
 
 func pasteView(w http.ResponseWriter, r *http.Request) {
-  w.Write([]byte("Display a specific paste"))
+
+  id, err := strconv.Atoi(r.URL.Query().Get("id"))
+  if err != nil || id < 1 {
+    http.NotFound(w, r)
+    return
+  }
+
+  fmt.Fprintf(w, "Display a specific paste with id %d...", id)
 }
 
 func pasteCreate(w http.ResponseWriter, r *http.Request) {
   if r.Method != http.MethodPost {
-    w.WriteHeader(http.StatusMethodNotAllowed)
-    w.Write([]byte("Method Not Allowed"))
+    w.Header().Set("Allow", http.MethodPost)
+    http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
     return
   }
 
