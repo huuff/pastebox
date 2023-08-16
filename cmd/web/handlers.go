@@ -3,6 +3,8 @@ package main
 import (
   "net/http"
   "strconv"
+  "html/template"
+  "log"
   "fmt"
 )
 
@@ -12,7 +14,18 @@ func home(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  w.Write([]byte("Hello from Pastebox"))
+  ts, err := template.ParseFiles("./ui/html/pages/home.tmpl")
+  if err != nil {
+    log.Println(err.Error())
+    http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+    return
+  }
+
+  err = ts.Execute(w, nil)
+  if err != nil {
+    log.Println(err.Error())
+    http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+  }
 }
 
 func pasteView(w http.ResponseWriter, r *http.Request) {
