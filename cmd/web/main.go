@@ -23,8 +23,14 @@ func main() {
   mux.HandleFunc("/paste/view", pasteView)
   mux.HandleFunc("/paste/create", pasteCreate)
 
+  srv := &http.Server {
+    Addr: args.Addr(),
+    ErrorLog: errorLog,
+    Handler: mux,
+  }
+
   infoLog.Printf("Starting server on %s", args.Addr())
-  if err := http.ListenAndServe(args.Addr(), mux); err != nil {
+  if err := srv.ListenAndServe(); err != nil {
     errorLog.Fatal(err)
   }
 
