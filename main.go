@@ -19,6 +19,12 @@ func pasteView(w http.ResponseWriter, r *http.Request) {
 }
 
 func pasteCreate(w http.ResponseWriter, r *http.Request) {
+  if r.Method != http.MethodPost {
+    w.WriteHeader(http.StatusMethodNotAllowed)
+    w.Write([]byte("Method Not Allowed"))
+    return
+  }
+
   w.Write([]byte("Create a new paste"))
 }
 
