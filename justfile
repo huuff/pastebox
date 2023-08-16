@@ -1,2 +1,2 @@
-dev:
-  go run ./cmd/web
+dev *args='':
+  go run ./cmd/web {{args}}

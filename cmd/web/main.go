@@ -7,6 +7,8 @@ import (
 
 
 func main() {
+  args := ParseArgs()
+
   mux := http.NewServeMux()
   
   fileServer := http.FileServer(nonIndexingFileSystem { http.Dir("./ui/static") })
@@ -17,8 +19,8 @@ func main() {
   mux.HandleFunc("/paste/view", pasteView)
   mux.HandleFunc("/paste/create", pasteCreate)
 
-  log.Println("Starting server on :4000")
-  err := http.ListenAndServe(":4000", mux)
+  log.Printf("Starting server on %s", args.Addr())
+  err := http.ListenAndServe(args.Addr(), mux)
   log.Fatal(err)
 
 }
