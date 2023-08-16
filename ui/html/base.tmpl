@@ -1,0 +1,26 @@
+{{ define "base" }}
+<!doctype html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ template "title" . }} - Pastebox</title>
+  </head>
+
+  <body>
+    <header>
+      <h1>
+        <a href="/">Pastebox</a>
+      </h1>
+    </header>
+    {{ template "nav" . }}
+    <main>
+      {{ template "main" . }}
+    </main>
+
+    <footer>
+      Powered by <a href="http://golang.org">Go</a>
+    </footer>
+  </body>
+</html>
+{{ end }}
