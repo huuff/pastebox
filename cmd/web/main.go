@@ -20,7 +20,7 @@ func main() {
   infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
   errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-  _, closeMongo, err := db.ConnectToMongo()
+  _, closeMongo, err := db.ConnectToMongo(infoLog)
   if err != nil {
     errorLog.Fatal(err)
   }

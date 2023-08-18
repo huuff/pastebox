@@ -5,12 +5,12 @@ import (
   "go.mongodb.org/mongo-driver/bson"
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
-  "fmt"
+  "log"
 )
 
 // TODO: Pass it from somewhere?
 const mongoUri = "mongodb://root:pass@localhost:27017"
-func ConnectToMongo() (*mongo.Client, func(), error) {
+func ConnectToMongo(infoLogger *log.Logger) (*mongo.Client, func(), error) {
   serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 
   opts := options.Client().ApplyURI(mongoUri).SetServerAPIOptions(serverAPI)
@@ -30,6 +30,7 @@ func ConnectToMongo() (*mongo.Client, func(), error) {
 	  close()	
     return nil, nil, err
 	}
-  fmt.Println("Successfully connected to mongo!")
+  // TODO: ooops, logging the password
+  infoLogger.Printf("Connected to mongo on %s", mongoUri)
   return client, close, nil
 }
