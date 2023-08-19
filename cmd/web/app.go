@@ -23,6 +23,7 @@ func newApplication() (application, func()) {
     errorLog.Fatal(err)
   }
 
+  // TODO: Or maybe just pass the mongo and let pastes create the collection?
   pastesCollection := mongo.Database("db").Collection("pastes")
 
   pastes := dao.NewPasteDAO(pastesCollection)
