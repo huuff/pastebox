@@ -23,7 +23,9 @@ func newApplication() (application, func()) {
     errorLog.Fatal(err)
   }
 
-  pastes := dao.NewPasteDAO(mongo)
+  pastesCollection := mongo.Database("db").Collection("pastes")
+
+  pastes := dao.NewPasteDAO(pastesCollection)
 
   return application {
     infoLog: infoLog,

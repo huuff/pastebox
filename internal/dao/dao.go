@@ -15,11 +15,11 @@ type Paste struct {
 }
 
 type PasteDAO struct {
-  mongo *mongo.Client
+  collection *mongo.Collection
 }
 
-func NewPasteDAO(mongo *mongo.Client) *PasteDAO {
-  return &PasteDAO { mongo }
+func NewPasteDAO(collection *mongo.Collection) *PasteDAO {
+  return &PasteDAO { collection }
 }
 
 func (dao *PasteDAO) Insert(title string, content string, expires int) (string, error) {
