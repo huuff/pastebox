@@ -2,15 +2,16 @@ package main
 
 import (
 	"log"
-  "os"
-	"go.mongodb.org/mongo-driver/mongo"
-  "xyz.haff/pastebox/internal/db"
+	"os"
+
+	"xyz.haff/pastebox/internal/dao"
+	"xyz.haff/pastebox/internal/db"
 )
 
 type application struct {
   errorLog *log.Logger
   infoLog *log.Logger
-  mongo *mongo.Client
+  pastes *dao.PasteDAO
 }
 
 func newApplication() (application, func()) {
@@ -22,9 +23,11 @@ func newApplication() (application, func()) {
     errorLog.Fatal(err)
   }
 
+  pastes := dao.NewPasteDAO(mongo)
+
   return application {
     infoLog: infoLog,
     errorLog: errorLog,
-    mongo: mongo,
+    pastes: pastes,
   }, closeMongo
 }
