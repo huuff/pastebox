@@ -6,6 +6,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+
+  "xyz.haff/pastebox/internal/db"
 )
 
 type Paste struct {
@@ -20,7 +22,9 @@ type PasteDAO struct {
   collection *mongo.Collection
 }
 
-func NewPasteDAO(collection *mongo.Collection) *PasteDAO {
+func NewPasteDAO(mongo *mongo.Client) *PasteDAO {
+  collection := mongo.Database(db.DatabaseName).Collection("pastes")
+
   return &PasteDAO { collection }
 }
 
@@ -36,6 +40,7 @@ func (dao *PasteDAO) Insert(title string, content string, expires int) (string, 
     return "", err
   }
 
+  // TODO: A method to do this conversion automatically?
   return result.InsertedID.(primitive.ObjectID).String(), nil
 }
 
