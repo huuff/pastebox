@@ -23,7 +23,7 @@ func newApplication() (application, func()) {
     errorLog.Fatal(err)
   }
 
-  pastes := dao.NewPasteDAO(mongo)
+  pastes := dao.NewPasteDAO(mongo, infoLog)
 
   return application {
     infoLog: infoLog,

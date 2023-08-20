@@ -18,6 +18,9 @@ func main() {
     Handler: app.routes(),
   }
 
+  // TODO: Remove, just for testing that it works
+  app.pastes.Insert("test", "test", 5)
+
   app.infoLog.Printf("Starting server on %s", args.Addr())
   if err := srv.ListenAndServe(); err != nil {
     app.errorLog.Fatal(err)

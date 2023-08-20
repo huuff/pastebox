@@ -2,12 +2,12 @@ package dao
 
 import (
 	"context"
+	"log"
 	"time"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 
-  "xyz.haff/pastebox/internal/db"
+	"xyz.haff/pastebox/internal/db"
 )
 
 type Paste struct {
@@ -20,12 +20,13 @@ type Paste struct {
 
 type PasteDAO struct {
   collection *mongo.Collection
+  infoLog *log.Logger
 }
 
-func NewPasteDAO(mongo *mongo.Client) *PasteDAO {
+func NewPasteDAO(mongo *mongo.Client, infoLog *log.Logger) *PasteDAO {
   collection := mongo.Database(db.DatabaseName).Collection("pastes")
 
-  return &PasteDAO { collection }
+  return &PasteDAO { collection, infoLog }
 }
 
 func (dao *PasteDAO) Insert(title string, content string, expires int) (string, error) {
@@ -40,8 +41,10 @@ func (dao *PasteDAO) Insert(title string, content string, expires int) (string, 
     return "", err
   }
 
-  // TODO: A method to do this conversion automatically?
-  return result.InsertedID.(primitive.ObjectID).String(), nil
+  id := db.GetInsertOneStringId(result)
+  dao.infoLog.Printf("Inserted %s", id)
+
+  return id, nil
 }
 
 func (dao *PasteDAO) Get(id string) (*Paste, error) {
