@@ -1,8 +1,10 @@
 package dao
 
 import (
+	"context"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -23,7 +25,18 @@ func NewPasteDAO(collection *mongo.Collection) *PasteDAO {
 }
 
 func (dao *PasteDAO) Insert(title string, content string, expires int) (string, error) {
-  return "", nil
+  result, err := dao.collection.InsertOne(context.TODO(), Paste {
+    Title: title,
+    Content: content,
+    Created: time.Now(),
+    Expires: time.Now().AddDate(0, 0, expires),
+  } )
+
+  if err != nil {
+    return "", err
+  }
+
+  return result.InsertedID.(primitive.ObjectID).String(), nil
 }
 
 func (dao *PasteDAO) Get(id string) (*Paste, error) {
