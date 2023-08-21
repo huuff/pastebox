@@ -42,7 +42,7 @@ func (dao *PasteDAO) Insert(title string, content string, expires int) (string, 
   }
 
   id := db.GetInsertOneStringId(result)
-  dao.infoLog.Printf("Inserted %s", id)
+  dao.infoLog.Printf("Inserted paste %s", id)
 
   return id, nil
 }

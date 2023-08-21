@@ -48,5 +48,16 @@ func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
     return
   }
 
+  // TODO: Actually receive params from request
+  title := "O snail"
+  content := `O snail
+Climb Mount Fuji
+But slowly, slowly!
+
+Kobayashi Issa`
+  expires := 7
+
+  app.pastes.Insert(title, content, expires)
+
   w.Write([]byte("Create a new paste"))
 }
