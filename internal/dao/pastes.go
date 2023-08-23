@@ -5,13 +5,14 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"xyz.haff/pastebox/internal/db"
 )
 
 type Paste struct {
-  ID string
+  ID string `bson:"_id"`
   Title string
   Content string
   Created time.Time
@@ -47,8 +48,16 @@ func (dao *PasteDAO) Insert(title string, content string, expires int) (string, 
   return id, nil
 }
 
+// TODO: Handle not found
 func (dao *PasteDAO) Get(id string) (*Paste, error) {
-  return nil, nil
+  var result Paste
+  err := dao.collection.FindOne(context.TODO(), bson.D{{ "_id", id}}).Decode(&result)
+  
+  if err != nil {
+    return nil, err
+  }
+
+  return &result, nil
 }
 
 func (dao *PasteDAO) Latest() ([]*Paste, error) {
