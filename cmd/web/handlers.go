@@ -57,7 +57,11 @@ But slowly, slowly!
 Kobayashi Issa`
   expires := 7
 
-  app.pastes.Insert(title, content, expires)
+  id, err := app.pastes.Insert(title, content, expires)
+  if err != nil {
+    app.serverError(w, err)
+    return
+  }
 
-  w.Write([]byte("Create a new paste"))
+  http.Redirect(w, r, fmt.Sprintf("/paste/view?id=%s", id), http.StatusSeeOther)
 }
