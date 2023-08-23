@@ -13,6 +13,6 @@ func GetInsertOneStringId(r *mongo.InsertOneResult) string {
     panic(fmt.Sprintf("Cannot convert %v to ObjectId", r.InsertedID))  
   }
 
-  return objectId.String()
+  return objectId.Hex()
 }
 
