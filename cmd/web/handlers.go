@@ -2,7 +2,6 @@ package main
 
 import (
   "net/http"
-  "strconv"
   "html/template"
   "fmt"
 )
@@ -31,14 +30,20 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
-
-  id, err := strconv.Atoi(r.URL.Query().Get("id"))
-  if err != nil || id < 1 {
+  id := r.URL.Query().Get("id")
+  if id == "" {
     app.notFound(w)
     return
   }
 
-  fmt.Fprintf(w, "Display a specific paste with id %d...", id)
+  // TODO: Handle not found
+  paste, err := app.pastes.Get(id)
+  if err != nil {
+    app.serverError(w, err)
+    return
+  }
+
+  fmt.Fprintf(w, "%+v", paste)
 }
 
 func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {

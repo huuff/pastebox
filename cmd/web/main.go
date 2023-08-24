@@ -18,6 +18,8 @@ func main() {
     Handler: app.routes(),
   }
 
+
+
   app.infoLog.Printf("Starting server on %s", args.Addr())
   if err := srv.ListenAndServe(); err != nil {
     app.errorLog.Fatal(err)
