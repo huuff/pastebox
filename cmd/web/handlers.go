@@ -1,9 +1,12 @@
 package main
 
 import (
-  "net/http"
-  "html/template"
-  "fmt"
+	"errors"
+	"fmt"
+	"html/template"
+	"net/http"
+
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -36,10 +39,14 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  // TODO: Handle not found
+  // TODO: This is coupled to the database's error for not found! Try to wrap it
   paste, err := app.pastes.Get(id)
   if err != nil {
-    app.serverError(w, err)
+    if errors.Is(err, mongo.ErrNoDocuments) {
+      app.notFound(w)
+    } else {
+      app.serverError(w, err)
+    }
     return
   }
 
