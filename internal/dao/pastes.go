@@ -8,9 +8,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"errors"
 
 	"xyz.haff/pastebox/internal/db"
-  "errors"
 )
 
 type Paste struct {
@@ -51,6 +53,7 @@ func (dao *PasteDAO) Insert(title string, content string, expires int) (string, 
 }
 
 // TODO: Handle not found
+// TODO: Remove above TODO
 func (dao *PasteDAO) Get(id string) (*Paste, error) {
   objectId, _ := primitive.ObjectIDFromHex(id)
 
@@ -68,6 +71,23 @@ func (dao *PasteDAO) Get(id string) (*Paste, error) {
   return &result, nil
 }
 
-func (dao *PasteDAO) Latest() ([]*Paste, error) {
-  return nil, nil
+// TODO: Filter-out expired
+// TODO: Handler for this
+func (dao *PasteDAO) Latest() ([]Paste, error) {
+  opt := options.
+          Find().
+          SetLimit(10).
+          SetSort(bson.D {{ "_id", -1 }})
+  cursor, err := dao.collection.Find(context.TODO(), bson.D{{}}, opt)
+
+  if err != nil {
+    return nil, err
+  }
+
+  var results []Paste
+  if err = cursor.All(context.TODO(), &results); err != nil {
+    return nil, err
+  }
+
+  return results, nil
 }
