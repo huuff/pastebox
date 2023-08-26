@@ -10,6 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	"xyz.haff/pastebox/internal/db"
+  "errors"
 )
 
 type Paste struct {
@@ -57,7 +58,11 @@ func (dao *PasteDAO) Get(id string) (*Paste, error) {
   err := dao.collection.FindOne(context.TODO(), bson.D{{ "_id", objectId}}).Decode(&result)
   
   if err != nil {
-    return nil, err
+    if errors.Is(err, mongo.ErrNoDocuments) {
+      return nil, db.NewPasteNotFoundError(id)
+    } else {
+      return nil, err
+    }
   }
 
   return &result, nil

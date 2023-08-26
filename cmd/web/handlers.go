@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"go.mongodb.org/mongo-driver/mongo"
+	"xyz.haff/pastebox/internal/db"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -39,10 +39,9 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  // TODO: This is coupled to the database's error for not found! Try to wrap it
   paste, err := app.pastes.Get(id)
   if err != nil {
-    if errors.Is(err, mongo.ErrNoDocuments) {
+    if errors.Is(err, db.ErrPasteNotFound) {
       app.notFound(w)
     } else {
       app.serverError(w, err)
