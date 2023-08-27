@@ -1,18 +1,18 @@
 package dao
 
 import (
-	"context"
-	"log"
-	"time"
+  "context"
+  "log"
+  "time"
 
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+  "go.mongodb.org/mongo-driver/bson"
+  "go.mongodb.org/mongo-driver/bson/primitive"
+  "go.mongodb.org/mongo-driver/mongo"
+  "go.mongodb.org/mongo-driver/mongo/options"
 
-	"errors"
+  "errors"
 
-	"xyz.haff/pastebox/internal/db"
+  "xyz.haff/pastebox/internal/db"
 )
 
 type Paste struct {
@@ -20,7 +20,7 @@ type Paste struct {
   Title string
   Content string
   Created time.Time
-  Expires time.Time
+  Expires time.Time `bson:"expires"`
 }
 
 type PasteDAO struct {
@@ -57,7 +57,7 @@ func (dao *PasteDAO) Get(id string) (*Paste, error) {
 
   var result Paste
   err := dao.collection.FindOne(context.TODO(), bson.D{{ "_id", objectId}}).Decode(&result)
-  
+
   if err != nil {
     if errors.Is(err, mongo.ErrNoDocuments) {
       return nil, db.NewPasteNotFoundError(id)
@@ -69,14 +69,18 @@ func (dao *PasteDAO) Get(id string) (*Paste, error) {
   return &result, nil
 }
 
-// TODO: Filter-out expired
 // TODO: Handler for this
 func (dao *PasteDAO) Latest() ([]Paste, error) {
   opt := options.
           Find().
           SetLimit(10).
           SetSort(bson.D {{ "_id", -1 }})
-  cursor, err := dao.collection.Find(context.TODO(), bson.D{{}}, opt)
+
+  nonExpiredFilter := bson.M {
+    "expires": bson.M { "$gt": time.Now() },
+  }
+
+  cursor, err := dao.collection.Find(context.TODO(), nonExpiredFilter, opt)
 
   if err != nil {
     return nil, err
