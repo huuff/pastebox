@@ -52,8 +52,6 @@ func (dao *PasteDAO) Insert(title string, content string, expires int) (string, 
   return id, nil
 }
 
-// TODO: Handle not found
-// TODO: Remove above TODO
 func (dao *PasteDAO) Get(id string) (*Paste, error) {
   objectId, _ := primitive.ObjectIDFromHex(id)
 
