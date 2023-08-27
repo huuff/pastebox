@@ -3,33 +3,44 @@ package main
 import (
 	"errors"
 	"fmt"
-	"html/template"
+	//"html/template"
 	"net/http"
 
 	"xyz.haff/pastebox/internal/db"
 )
 
+// TODO: Just printing out every paste for testing, but bring back the template in the future
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
   if r.URL.Path != "/" {
     app.notFound(w)
     return
   }
 
-  files := []string {
-    "./ui/html/base.gotmpl",
-    "./ui/html/partials/nav.gotmpl",
-    "./ui/html/pages/home.gotmpl",
-  }
-  ts, err := template.ParseFiles(files...)
+  pastes, err := app.pastes.Latest()
   if err != nil {
     app.serverError(w, err)
     return
   }
 
-  err = ts.ExecuteTemplate(w, "base", nil)
-  if err != nil {
-    app.serverError(w, err)
+  for _, paste := range pastes {
+    fmt.Fprintf(w, "%+v\n", paste)
   }
+
+  //files := []string {
+    //"./ui/html/base.gotmpl",
+    //"./ui/html/partials/nav.gotmpl",
+    //"./ui/html/pages/home.gotmpl",
+  //}
+  //ts, err := template.ParseFiles(files...)
+  //if err != nil {
+    //app.serverError(w, err)
+    //return
+  //}
+
+  //err = ts.ExecuteTemplate(w, "base", nil)
+  //if err != nil {
+    //app.serverError(w, err)
+  //}
 }
 
 func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
