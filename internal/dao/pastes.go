@@ -17,9 +17,9 @@ import (
 
 type Paste struct {
   ID string `bson:"_id,omitempty"`
-  Title string
-  Content string
-  Created time.Time
+  Title string `bson:"title"`
+  Content string `bson:"content"`
+  Created time.Time `bson:"created"`
   Expires time.Time `bson:"expires"`
 }
 
