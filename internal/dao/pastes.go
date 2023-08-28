@@ -56,7 +56,7 @@ func (dao *PasteDAO) Get(id string) (*Paste, error) {
   objectId, _ := primitive.ObjectIDFromHex(id)
 
   var result Paste
-  err := dao.collection.FindOne(context.TODO(), bson.D{{ "_id", objectId}}).Decode(&result)
+  err := dao.collection.FindOne(context.TODO(), bson.M{ "_id": objectId}).Decode(&result)
 
   if err != nil {
     if errors.Is(err, mongo.ErrNoDocuments) {
@@ -74,7 +74,7 @@ func (dao *PasteDAO) Latest() ([]Paste, error) {
   opt := options.
           Find().
           SetLimit(10).
-          SetSort(bson.D {{ "_id", -1 }})
+          SetSort(bson.M { "_id": -1 })
 
   nonExpiredFilter := bson.M {
     "expires": bson.M { "$gt": time.Now() },
