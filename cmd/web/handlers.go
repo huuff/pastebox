@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
-	//"html/template"
+  "html/template"
 	"net/http"
 
 	"xyz.haff/pastebox/internal/db"
@@ -43,6 +43,7 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
   //}
 }
 
+// TODO: Give some styles to this!!
 func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
   id := r.URL.Query().Get("id")
   if id == "" {
@@ -60,7 +61,22 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  fmt.Fprintf(w, "%+v", paste)
+  files := []string {
+    "./ui/html/base.gotmpl",
+    "./ui/html/partials/nav.gotmpl",
+    "./ui/html/pages/view.gotmpl",
+  }
+
+  ts, err := template.ParseFiles(files...)
+  if err != nil {
+    app.serverError(w, err)
+    return
+  }
+
+  err = ts.ExecuteTemplate(w, "base", paste)
+  if err != nil {
+    app.serverError(w, err)
+  }
 }
 
 func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
