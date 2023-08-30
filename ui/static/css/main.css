@@ -58,3 +58,22 @@ footer {
   padding: 1rem 0;
   text-align: center;
 }
+
+.paste {
+  border: 1px #EAECED solid;
+}
+
+pre {
+  padding: 1rem;
+  background-color: #FFFFFF;
+}
+
+.metadata {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border: 1px #EAECED solid;
+
+  padding: 1rem;
+  color: #6A6C6F;
+}

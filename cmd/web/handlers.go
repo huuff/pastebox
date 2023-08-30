@@ -88,11 +88,12 @@ func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
 
   // TODO: Actually receive params from request
   title := "O snail"
-  content := `O snail
+  content := `
+O snail
 Climb Mount Fuji
 But slowly, slowly!
 
-Kobayashi Issa`
+- Kobayashi Issa`
   expires := 7
 
   id, err := app.pastes.Insert(title, content, expires)
