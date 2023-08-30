@@ -38,8 +38,8 @@ func (dao *PasteDAO) Insert(title string, content string, expires int) (string, 
   result, err := dao.collection.InsertOne(context.TODO(), Paste {
     Title: title,
     Content: content,
-    Created: time.Now(),
-    Expires: time.Now().AddDate(0, 0, expires),
+    Created: time.Now().Truncate(time.Second),
+    Expires: time.Now().AddDate(0, 0, expires).Truncate(time.Second),
   } )
 
   if err != nil {
