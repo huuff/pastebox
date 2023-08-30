@@ -15,7 +15,7 @@ body {
 }
 
 main {
-  max-width: 1024px;
+  width: 768px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -61,6 +61,7 @@ footer {
 
 .paste {
   border: 1px #EAECED solid;
+  width: 100%;
 }
 
 pre {
