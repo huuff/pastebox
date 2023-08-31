@@ -4,14 +4,14 @@ import (
 	"log"
 	"os"
 
-	"xyz.haff/pastebox/internal/dao"
+	"xyz.haff/pastebox/internal/models"
 	"xyz.haff/pastebox/internal/db"
 )
 
 type application struct {
   errorLog *log.Logger
   infoLog *log.Logger
-  pastes *dao.PasteDAO
+  pastes *models.PasteDAO
 }
 
 func newApplication() (application, func()) {
@@ -23,7 +23,7 @@ func newApplication() (application, func()) {
     errorLog.Fatal(err)
   }
 
-  pastes := dao.NewPasteDAO(mongo, infoLog)
+  pastes := models.NewPasteDAO(mongo, infoLog)
 
   return application {
     infoLog: infoLog,
