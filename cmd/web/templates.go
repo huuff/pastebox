@@ -6,4 +6,5 @@ import (
 
 type templateData struct {
   Paste *models.Paste
+  Pastes []*models.Paste
 }

@@ -5,11 +5,13 @@ import (
 	"fmt"
   "html/template"
 	"net/http"
+  "github.com/samber/lo"
 
 	"xyz.haff/pastebox/internal/db"
+	"xyz.haff/pastebox/internal/models"
 )
 
-// TODO: Just printing out every paste for testing, but bring back the template in the future
+// TODO: Some styles for this
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
   if r.URL.Path != "/" {
     app.notFound(w)
@@ -22,25 +24,27 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  for _, paste := range pastes {
-    fmt.Fprintf(w, "%+v\n", paste)
+  files := []string {
+    "./ui/html/base.gotmpl",
+    "./ui/html/partials/nav.gotmpl",
+    "./ui/html/pages/home.gotmpl",
+  }
+  ts, err := template.ParseFiles(files...)
+  if err != nil {
+    app.serverError(w, err)
+    return
   }
 
-  //files := []string {
-    //"./ui/html/base.gotmpl",
-    //"./ui/html/partials/nav.gotmpl",
-    //"./ui/html/pages/home.gotmpl",
-  //}
-  //ts, err := template.ParseFiles(files...)
-  //if err != nil {
-    //app.serverError(w, err)
-    //return
-  //}
+  data := &templateData {
+    Pastes: lo.Map(pastes, func(paste models.Paste, _ int) *models.Paste {
+      return &paste
+    }),
+  }
 
-  //err = ts.ExecuteTemplate(w, "base", nil)
-  //if err != nil {
-    //app.serverError(w, err)
-  //}
+  err = ts.ExecuteTemplate(w, "base", data)
+  if err != nil {
+    app.serverError(w, err)
+  }
 }
 
 func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {

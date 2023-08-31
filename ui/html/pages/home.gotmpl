@@ -2,5 +2,26 @@
 
 {{ define "main" }}
   <h2>Latest Pastes</h2>
-  <p>There's nothing to see here yet!</p>
+  {{ if .Pastes }}
+    <table>
+      <tr>
+        <th>Title</th>
+        <th>Created</th>
+        <th>ID</th>
+      </tr>
+      {{ range .Pastes }}
+        <tr>
+          <td>
+            <a href="/paste/view?id={{.ID}}">
+              {{ .Title }}
+            </a>
+          </td>
+          <td>{{ .Created }}</td>
+          <td>#{{ .ID }}</td>
+        </tr>
+      {{ end }}
+    </table>
+  {{ else }}
+    <p>There's nothing to see here... yet!</p>
+  {{ end }}
 {{ end }}
