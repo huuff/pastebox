@@ -72,7 +72,11 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  err = ts.ExecuteTemplate(w, "base", paste)
+  data := &templateData {
+    Paste: paste,
+  }
+
+  err = ts.ExecuteTemplate(w, "base", data)
   if err != nil {
     app.serverError(w, err)
   }
