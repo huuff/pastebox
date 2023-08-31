@@ -1,20 +1,22 @@
 {{ define "title" }}Paste #{{.Paste.ID}}{{end}}
 
 {{ define "main"}}
+    {{ with .Paste }}
     <div class="paste">
       <div class="metadata">
-        <strong>{{.Paste.Title}}</strong>
-        <span>#{{.Paste.ID}}</span>
+        <strong>{{.Title}}</strong>
+        <span>#{{.ID}}</span>
       </div>
       <pre>
         <code>
-          {{ .Paste.Content }}
+          {{ .Content }}
         </code>
       </pre>
 
       <div class="metadata">
-        <time>Created: {{ .Paste.Created }}</time>
-        <time>Expires: {{ .Paste.Expires }}</time>
+        <time>Created: {{ .Created }}</time>
+        <time>Expires: {{ .Expires }}</time>
       </div>
     </div>
+    {{ end }}
 {{ end }}
