@@ -43,7 +43,6 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
   //}
 }
 
-// TODO: Give some styles to this!!
 func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
   id := r.URL.Query().Get("id")
   if id == "" {
