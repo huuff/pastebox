@@ -1,3 +1,7 @@
+:root {
+  --border-color: #EAECED;
+}
+
 * {
  box-sizing: border-box;
  margin: 0;
@@ -60,7 +64,7 @@ footer {
 }
 
 .paste {
-  border: 1px #EAECED solid;
+  border: 1px var(--border-color) solid;
   width: 100%;
 }
 
@@ -73,8 +77,25 @@ pre {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  border: 1px #EAECED solid;
+  border: 1px var(--border-color) solid;
 
   padding: 1rem;
   color: #6A6C6F;
 }
+
+table {
+  border: 1px var(--border-color) solid;
+}
+
+tr:nth-child(even) {
+  background-color: #FFFFFF;
+}
+
+tr:nth-child(odd) {
+  background-color: #F7F9FA;
+}
+
+td, th {
+  padding: 0.5rem 1rem;
+}
+
