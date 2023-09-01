@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-  "html/template"
 	"net/http"
   "github.com/samber/lo"
 
@@ -11,7 +10,6 @@ import (
 	"xyz.haff/pastebox/internal/models"
 )
 
-// TODO: Some styles for this
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
   if r.URL.Path != "/" {
     app.notFound(w)
@@ -24,27 +22,13 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  files := []string {
-    "./ui/html/base.gotmpl",
-    "./ui/html/partials/nav.gotmpl",
-    "./ui/html/pages/home.gotmpl",
-  }
-  ts, err := template.ParseFiles(files...)
-  if err != nil {
-    app.serverError(w, err)
-    return
-  }
-
   data := &templateData {
     Pastes: lo.Map(pastes, func(paste models.Paste, _ int) *models.Paste {
       return &paste
     }),
   }
 
-  err = ts.ExecuteTemplate(w, "base", data)
-  if err != nil {
-    app.serverError(w, err)
-  }
+  app.render(w, http.StatusOK, "home.gotmpl", data)
 }
 
 func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
@@ -64,26 +48,11 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  files := []string {
-    "./ui/html/base.gotmpl",
-    "./ui/html/partials/nav.gotmpl",
-    "./ui/html/pages/view.gotmpl",
-  }
-
-  ts, err := template.ParseFiles(files...)
-  if err != nil {
-    app.serverError(w, err)
-    return
-  }
-
   data := &templateData {
     Paste: paste,
   }
 
-  err = ts.ExecuteTemplate(w, "base", data)
-  if err != nil {
-    app.serverError(w, err)
-  }
+  app.render(w, http.StatusOK, "view.gotmpl", data)
 }
 
 func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
@@ -110,4 +79,19 @@ But slowly, slowly!
   }
 
   http.Redirect(w, r, fmt.Sprintf("/paste/view?id=%s", id), http.StatusSeeOther)
+}
+
+func (app *application) render(w http.ResponseWriter, status int, page string, data *templateData) {
+  ts, ok := app.templateCache[page]
+  if !ok {
+    err := fmt.Errorf("the template %s does not exist", page)
+    app.serverError(w, err)
+    return
+  }
+
+  w.WriteHeader(status)
+
+  if err := ts.ExecuteTemplate(w, "base", data); err != nil {
+    app.serverError(w, err)
+  }
 }

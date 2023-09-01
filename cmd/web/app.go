@@ -1,17 +1,19 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"os"
 
-	"xyz.haff/pastebox/internal/models"
 	"xyz.haff/pastebox/internal/db"
+	"xyz.haff/pastebox/internal/models"
 )
 
 type application struct {
   errorLog *log.Logger
   infoLog *log.Logger
   pastes *models.PasteDAO
+  templateCache map[string]*template.Template
 }
 
 func newApplication() (application, func()) {
@@ -25,9 +27,15 @@ func newApplication() (application, func()) {
 
   pastes := models.NewPasteDAO(mongo, infoLog)
 
+  templateCache, err := newTemplateCache()
+  if err != nil {
+    errorLog.Fatal(err)
+  }
+
   return application {
     infoLog: infoLog,
     errorLog: errorLog,
     pastes: pastes,
+    templateCache: templateCache,
   }, closeMongo
 }
