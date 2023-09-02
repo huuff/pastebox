@@ -8,6 +8,7 @@ import (
 )
 
 type templateData struct {
+  CurrentYear int
   Paste *models.Paste
   Pastes []*models.Paste
 }

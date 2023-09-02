@@ -1,10 +1,17 @@
 package main
 
 import (
-  "fmt"
-  "net/http"
-  "runtime/debug"
+	"fmt"
+	"net/http"
+	"runtime/debug"
+	"time"
 )
+
+func (app *application) newTemplateData(r *http.Request) *templateData {
+  return &templateData {
+    CurrentYear: time.Now().Year(),
+  }
+}
 
 func (app *application) serverError(w http.ResponseWriter, err error) {
   trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())

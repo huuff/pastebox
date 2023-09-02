@@ -23,12 +23,11 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
     app.serverError(w, err)
     return
   }
-
-  data := &templateData {
-    Pastes: lo.Map(pastes, func(paste models.Paste, _ int) *models.Paste {
+  
+  data := app.newTemplateData(r)
+  data.Pastes = lo.Map(pastes, func(paste models.Paste, _ int) *models.Paste {
       return &paste
-    }),
-  }
+  })
 
   app.render(w, http.StatusOK, "home.gotmpl", data)
 }
@@ -50,9 +49,8 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  data := &templateData {
-    Paste: paste,
-  }
+  data := app.newTemplateData(r)
+  data.Paste = paste
 
   app.render(w, http.StatusOK, "view.gotmpl", data)
 }
