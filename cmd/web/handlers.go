@@ -52,8 +52,11 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
   app.render(w, http.StatusOK, "view.gotmpl", data)
 }
 
+// TODO: Style this
 func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
-  w.Write([]byte("Display the form for creating a new paste"))
+  data := app.newTemplateData(r)
+
+  app.render(w, http.StatusOK, "create.gotmpl", data)
 }
 
 func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) {
