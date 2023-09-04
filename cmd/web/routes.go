@@ -9,6 +9,9 @@ import (
 func (app *application) routes() http.Handler {
   router := mux.NewRouter()
 
+  router.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    app.notFound(w)
+  })
   
   fileServer := http.FileServer(nonIndexingFileSystem { http.Dir("./ui/static") })
   router.PathPrefix("/static").
