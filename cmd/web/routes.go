@@ -3,20 +3,27 @@ package main
 import (
   "net/http"
   "github.com/justinas/alice"
+  "github.com/gorilla/mux"
 )
 
 func (app *application) routes() http.Handler {
-  mux := http.NewServeMux()
+  router := mux.NewRouter()
 
   
   fileServer := http.FileServer(nonIndexingFileSystem { http.Dir("./ui/static") })
-  mux.Handle("/static/", http.StripPrefix("/static", fileServer))
+  router.PathPrefix("/static").
+        Handler(http.StripPrefix("/static", fileServer))
 
-  mux.HandleFunc("/", app.home)
-  mux.HandleFunc("/paste/view", app.pasteView)
-  mux.HandleFunc("/paste/create", app.pasteCreate)
+  router.HandleFunc("/", app.home).
+          Methods(http.MethodGet)
+  router.HandleFunc("/paste/view", app.pasteView).
+          Methods(http.MethodGet)
+  router.HandleFunc("/paste/create", app.pasteCreate).
+          Methods(http.MethodGet)
+  //router.HandleFunc("/paste/create", app.pasteCreatePost).
+          //Methods(http.MethodPost)
 
   standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
-  return standard.Then(mux)
+  return standard.Then(router)
 }
