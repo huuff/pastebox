@@ -16,7 +16,7 @@ func (app *application) routes() http.Handler {
 
   router.HandleFunc("/", app.home).
           Methods(http.MethodGet)
-  router.HandleFunc("/paste/view", app.pasteView).
+  router.HandleFunc("/paste/view/{id}", app.pasteView).
           Methods(http.MethodGet)
   router.HandleFunc("/paste/create", app.pasteCreate).
           Methods(http.MethodGet)

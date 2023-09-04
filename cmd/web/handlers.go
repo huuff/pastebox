@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/samber/lo"
 
 	"xyz.haff/pastebox/internal/db"
@@ -28,7 +29,8 @@ func (app *application) home(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
-  id := r.URL.Query().Get("id")
+  vars := mux.Vars(r)
+  id := vars["id"]
   if id == "" {
     app.notFound(w)
     return
