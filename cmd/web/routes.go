@@ -20,8 +20,8 @@ func (app *application) routes() http.Handler {
           Methods(http.MethodGet)
   router.HandleFunc("/paste/create", app.pasteCreate).
           Methods(http.MethodGet)
-  //router.HandleFunc("/paste/create", app.pasteCreatePost).
-          //Methods(http.MethodPost)
+  router.HandleFunc("/paste/create", app.pasteCreatePost).
+          Methods(http.MethodPost)
 
   standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 

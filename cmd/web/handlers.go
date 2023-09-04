@@ -51,12 +51,10 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
-  if r.Method != http.MethodPost {
-    w.Header().Set("Allow", http.MethodPost)
-    app.clientError(w, http.StatusMethodNotAllowed)
-    return
-  }
+  w.Write([]byte("Display the form for creating a new paste"))
+}
 
+func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) {
   // TODO: Actually receive params from request
   title := "O snail"
   content := `
