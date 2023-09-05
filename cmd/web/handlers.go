@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 	"github.com/samber/lo"
@@ -60,15 +61,20 @@ func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) {
-  // TODO: Actually receive params from request
-  title := "O snail"
-  content := `
-O snail
-Climb Mount Fuji
-But slowly, slowly!
 
-- Kobayashi Issa`
-  expires := 7
+  err := r.ParseForm()
+  if err != nil {
+    app.clientError(w, http.StatusBadRequest)
+    return
+  }
+
+  title := r.PostForm.Get("title")
+  content := r.PostForm.Get("content")
+  expires, err := strconv.Atoi(r.PostForm.Get("expires"))
+  if err != nil {
+    app.clientError(w, http.StatusBadRequest)
+    return
+  }
 
   id, err := app.pastes.Insert(title, content, expires)
   if err != nil {
@@ -76,7 +82,7 @@ But slowly, slowly!
     return
   }
 
-  http.Redirect(w, r, fmt.Sprintf("/paste/view?id=%s", id), http.StatusSeeOther)
+  http.Redirect(w, r, fmt.Sprintf("/paste/view/%s", id), http.StatusSeeOther)
 }
 
 func (app *application) render(w http.ResponseWriter, status int, page string, data *templateData) {
