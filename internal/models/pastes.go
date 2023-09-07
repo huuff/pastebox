@@ -69,7 +69,6 @@ func (dao *PasteDAO) Get(id string) (*Paste, error) {
   return &result, nil
 }
 
-// TODO: Handler for this
 func (dao *PasteDAO) Latest() ([]Paste, error) {
   opt := options.
           Find().
