@@ -75,6 +75,8 @@ func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) 
     return
   }
 
+  app.infoLog.Printf("Creating paste '%s': '%s'. Expires in %d days", title, content, expires)
+
   id, err := app.pastes.Insert(title, content, expires)
   if err != nil {
     app.serverError(w, err)
