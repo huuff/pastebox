@@ -53,7 +53,6 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
   app.render(w, http.StatusOK, "view.gotmpl", data)
 }
 
-// TODO: Style this
 func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
   data := app.newTemplateData(r)
 
