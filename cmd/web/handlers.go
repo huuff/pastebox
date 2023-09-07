@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
+  "unicode/utf8"
 
 	"github.com/gorilla/mux"
 	"github.com/samber/lo"
@@ -76,6 +78,27 @@ func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) 
   }
 
   app.infoLog.Printf("Creating paste '%s': '%s'. Expires in %d days", title, content, expires)
+
+  fieldErrors := make(map[string]string)
+
+  if strings.TrimSpace(title) == "" {
+    fieldErrors["title"] = "This field cannot be blank"
+  } else if utf8.RuneCountInString(title) > 100 {
+    fieldErrors["title"] = "This field cannot be over 100 characters long"
+  }
+
+  if strings.TrimSpace(content) == "" {
+    fieldErrors["content"] = "This field cannot be blank"
+  }
+
+  if expires != 1 && expires != 7 && expires != 365 {
+    fieldErrors["expires"] = "This field must be 1, 7, or 365"
+  }
+
+  if len(fieldErrors) != 0 {
+    fmt.Fprint(w, fieldErrors)
+    return
+  }
 
   id, err := app.pastes.Insert(title, content, expires)
   if err != nil {
