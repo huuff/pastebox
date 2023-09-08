@@ -12,6 +12,7 @@ type templateData struct {
   CurrentYear int
   Paste *models.Paste
   Pastes []*models.Paste
+  Form any
 }
 
 func humanDate(t time.Time) string {
