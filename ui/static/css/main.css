@@ -141,3 +141,8 @@ input[type="submit"] {
   font-size: 1.25rem;
   font-weight: 600;
 }
+
+.error {
+  color: red;
+  font-weight: 500;
+}
