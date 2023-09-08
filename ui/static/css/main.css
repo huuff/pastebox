@@ -146,3 +146,7 @@ input[type="submit"] {
   color: red;
   font-weight: 500;
 }
+
+.error + input, .error + textarea {
+  border: 1px solid red;
+}
