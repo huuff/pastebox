@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+  "github.com/gookit/validate"
 )
 
 
@@ -18,7 +19,9 @@ func main() {
     Handler: app.routes(),
   }
 
-
+  validate.Config(func(opt *validate.GlobalOption) {
+    opt.StopOnError = false
+  })
 
   app.infoLog.Printf("Starting server on %s", args.Addr())
   if err := srv.ListenAndServe(); err != nil {

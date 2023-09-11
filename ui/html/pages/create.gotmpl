@@ -4,7 +4,7 @@
 <form action="/paste/create" method="POST">
   <div class="form-control">
     <label>Title:</label>
-    {{ with .Form.FieldErrors.title }}
+    {{ with .Form.FieldErrors.Title }}
       <label class="error">{{.}}</label>
     {{ end }}
     <input type="text" name="title" value="{{.Form.Title}}"/>
@@ -12,7 +12,7 @@
 
   <div class="form-control">
     <label>Content:</label>
-    {{ with .Form.FieldErrors.content }}
+    {{ with .Form.FieldErrors.Content }}
       <label class="error">{{.}}</label>
     {{ end }}
     <textarea name="content" rows="10">{{.Form.Content}}</textarea>
@@ -20,7 +20,7 @@
 
   <div class="delete-in">
     <label>Delete in:</label>
-    {{ with .Form.FieldErrors.expires }}
+    {{ with .Form.FieldErrors.Expires }}
       <label class="error">{{.}}</label>
     {{ end }}
     <label class="radio-control">

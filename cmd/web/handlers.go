@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/gookit/validate"
 	"github.com/gorilla/mux"
 	"github.com/samber/lo"
 
 	"xyz.haff/pastebox/internal/db"
 	"xyz.haff/pastebox/internal/models"
-  "xyz.haff/pastebox/internal/validator"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -64,10 +64,10 @@ func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 type pasteCreateForm struct {
-  Title string
-  Content string
-  Expires int
-  validator.Validator
+  Title string `validate:"required|max_len:100"`
+  Content string `validate:"required"`
+  Expires int `validate:"in:1,7,365"`
+  FieldErrors map[string]string `validate:"-"`
 }
 
 func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) {
@@ -93,10 +93,16 @@ func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) 
   app.infoLog.Printf("Creating paste '%s': '%s'. Expires in %d days", form.Title, form.Content, expires)
 
 
-  form.CheckField(validator.NotBlank(form.Title), "title", "This field cannot be blank")
-  form.CheckField(validator.MaxChars(form.Title, 100), "title", "This field cannot be more than 100 characters long")
-  form.CheckField(validator.NotBlank(form.Content), "content", "This field cannot be blank")
-  form.CheckField(validator.PermittedInt(form.Expires, 1, 7, 365), "expires", "This field must equal 1, 7 or 365")
+  validation := validate.Struct(form)
+
+  if !validation.Validate() {
+    form.FieldErrors = lo.MapValues(validation.Errors.All(), func(errs map[string]string, _ string) string {
+      for _, v := range errs {
+        return v
+      }
+      return ""
+    })
+  }
 
   if len(form.FieldErrors) != 0 {
     data := app.newTemplateData(r)
