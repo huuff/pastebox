@@ -7,6 +7,7 @@ import (
 
 	"xyz.haff/pastebox/internal/db"
 	"xyz.haff/pastebox/internal/models"
+  "github.com/go-playground/form/v4"
 )
 
 type application struct {
@@ -14,6 +15,7 @@ type application struct {
   infoLog *log.Logger
   pastes *models.PasteDAO
   templateCache map[string]*template.Template
+  formDecoder *form.Decoder
 }
 
 func newApplication() (application, func()) {
@@ -37,5 +39,6 @@ func newApplication() (application, func()) {
     errorLog: errorLog,
     pastes: pastes,
     templateCache: templateCache,
+    formDecoder: form.NewDecoder(),
   }, closeMongo
 }

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 
+	"github.com/go-playground/form/v4"
 	"github.com/gookit/validate"
 	"github.com/gorilla/mux"
 	"github.com/samber/lo"
@@ -64,33 +64,21 @@ func (app *application) pasteCreate(w http.ResponseWriter, r *http.Request) {
 }
 
 type pasteCreateForm struct {
-  Title string `validate:"required|max_len:100"`
-  Content string `validate:"required"`
-  Expires int `validate:"in:1,7,365"`
-  FieldErrors map[string]string `validate:"-"`
+  Title string `validate:"required|max_len:100" form:"title"`
+  Content string `validate:"required" form:"content"`
+  Expires int `validate:"in:1,7,365" form:"expires"`
+  FieldErrors map[string]string `validate:"-" form:"-"`
 }
 
 func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) {
+  var form pasteCreateForm
 
-  err := r.ParseForm()
-  if err != nil {
+  if err := app.decodePostForm(r, &form); err != nil {
     app.clientError(w, http.StatusBadRequest)
     return
   }
 
-  expires, err := strconv.Atoi(r.PostForm.Get("expires"))
-  if err != nil {
-    app.clientError(w, http.StatusBadRequest)
-    return
-  }
-  
-  form := pasteCreateForm {
-    Title: r.PostForm.Get("title"),
-    Content: r.PostForm.Get("content"),
-    Expires: expires,
-  }
-
-  app.infoLog.Printf("Creating paste '%s': '%s'. Expires in %d days", form.Title, form.Content, expires)
+  app.infoLog.Printf("Creating paste '%s': '%s'. Expires in %d days", form.Title, form.Content, form.Expires)
 
 
   validation := validate.Struct(form)
@@ -111,7 +99,7 @@ func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) 
     return
   }
 
-  id, err := app.pastes.Insert(form.Title, form.Content, expires)
+  id, err := app.pastes.Insert(form.Title, form.Content, form.Expires)
   if err != nil {
     app.serverError(w, err)
     return
@@ -139,4 +127,21 @@ func (app *application) render(w http.ResponseWriter, status int, page string, d
   w.WriteHeader(status)
 
   buf.WriteTo(w)
+}
+
+func (app *application) decodePostForm(r *http.Request, dst any) error {
+  if err := r.ParseForm(); err != nil {
+    return err
+  }
+
+  if err := app.formDecoder.Decode(dst, r.PostForm); err != nil {
+    var invalidDecoderError *form.InvalidDecoderError
+    if errors.As(err, &invalidDecoderError) {
+      panic(err)
+    }
+
+    return err
+  }
+
+  return nil
 }
