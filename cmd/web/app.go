@@ -5,9 +5,11 @@ import (
 	"log"
 	"os"
 
+	"github.com/alexedwards/scs/v2"
+  "github.com/alexedwards/scs/mongodbstore"
+	"github.com/go-playground/form/v4"
 	"xyz.haff/pastebox/internal/db"
 	"xyz.haff/pastebox/internal/models"
-  "github.com/go-playground/form/v4"
 )
 
 type application struct {
@@ -16,6 +18,7 @@ type application struct {
   pastes *models.PasteDAO
   templateCache map[string]*template.Template
   formDecoder *form.Decoder
+  sessionManager *scs.SessionManager
 }
 
 func newApplication() (application, func()) {
@@ -26,6 +29,9 @@ func newApplication() (application, func()) {
   if err != nil {
     errorLog.Fatal(err)
   }
+
+  sessionManager := scs.New()
+  sessionManager.Store = mongodbstore.New(mongo.Database(db.DatabaseName))
 
   pastes := models.NewPasteDAO(mongo, infoLog)
 
@@ -40,5 +46,6 @@ func newApplication() (application, func()) {
     pastes: pastes,
     templateCache: templateCache,
     formDecoder: form.NewDecoder(),
+    sessionManager: sessionManager,
   }, closeMongo
 }

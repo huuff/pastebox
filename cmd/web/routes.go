@@ -17,13 +17,15 @@ func (app *application) routes() http.Handler {
   router.PathPrefix("/static").
         Handler(http.StripPrefix("/static", fileServer))
 
-  router.HandleFunc("/", app.home).
+  dynamic := alice.New(app.sessionManager.LoadAndSave)
+
+  router.Handle("/", dynamic.ThenFunc(app.home)).
           Methods(http.MethodGet)
-  router.HandleFunc("/paste/view/{id}", app.pasteView).
+  router.Handle("/paste/view/{id}", dynamic.ThenFunc(app.pasteView)).
           Methods(http.MethodGet)
-  router.HandleFunc("/paste/create", app.pasteCreate).
+  router.Handle("/paste/create", dynamic.ThenFunc(app.pasteCreate)).
           Methods(http.MethodGet)
-  router.HandleFunc("/paste/create", app.pasteCreatePost).
+  router.Handle("/paste/create", dynamic.ThenFunc(app.pasteCreatePost)).
           Methods(http.MethodPost)
 
   standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)

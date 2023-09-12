@@ -3,6 +3,8 @@ module xyz.haff/pastebox
 go 1.20
 
 require (
+	github.com/alexedwards/scs/mongodbstore v0.0.0-20230902070821-95fa2ac9d520 // indirect
+	github.com/alexedwards/scs/v2 v2.5.1 // indirect
 	github.com/go-playground/form/v4 v4.2.1 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
 	github.com/gookit/filter v1.2.0 // indirect
