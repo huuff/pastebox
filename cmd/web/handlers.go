@@ -48,8 +48,11 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
     return
   }
 
+  flash := app.sessionManager.PopString(r.Context(), "flash")
+
   data := app.newTemplateData(r)
   data.Paste = paste
+  data.Flash = flash
 
   app.render(w, http.StatusOK, "view.gotmpl", data)
 }
@@ -104,6 +107,8 @@ func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) 
     app.serverError(w, err)
     return
   }
+
+  app.sessionManager.Put(r.Context(), "flash", "Paste successfully created!")
 
   http.Redirect(w, r, fmt.Sprintf("/paste/view/%s", id), http.StatusSeeOther)
 }
