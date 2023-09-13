@@ -150,3 +150,12 @@ input[type="submit"] {
 .error + input, .error + textarea {
   border: 1px solid red;
 }
+
+.flash {
+  background-color: #34495E;
+  padding: 1rem;
+  text-align: center;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 1.5rem;
+}
