@@ -48,11 +48,9 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  flash := app.sessionManager.PopString(r.Context(), "flash")
 
   data := app.newTemplateData(r)
   data.Paste = paste
-  data.Flash = flash
 
   app.render(w, http.StatusOK, "view.gotmpl", data)
 }
