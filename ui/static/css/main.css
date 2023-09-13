@@ -41,12 +41,28 @@ a {
 }
 
 nav {
+  margin: 0 auto;
+  max-width: 1024px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+nav > div {
   display: flex;
   flex-direction: row;
   gap: 2rem;
+}
 
-  margin: 0 auto;
-  max-width: 1024px;
+.logout {
+	background: none;
+	color: inherit;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
 }
 
 h1 {

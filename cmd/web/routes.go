@@ -27,6 +27,18 @@ func (app *application) routes() http.Handler {
           Methods(http.MethodGet)
   router.Handle("/paste/create", dynamic.ThenFunc(app.pasteCreatePost)).
           Methods(http.MethodPost)
+  
+  router.Handle("/user/signup", dynamic.ThenFunc(app.userSignup)).
+    Methods(http.MethodGet)
+  router.Handle("/user/signup", dynamic.ThenFunc(app.userSignupPost)).
+    Methods(http.MethodPost)
+  router.Handle("/user/login", dynamic.ThenFunc(app.userLogin)).
+    Methods(http.MethodGet)
+  router.Handle("/user/login", dynamic.ThenFunc(app.userLoginPost)).
+    Methods(http.MethodPost)
+  router.Handle("/user/logout", dynamic.ThenFunc(app.userLogoutPost)).
+    Methods(http.MethodPost)
+
 
   standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
