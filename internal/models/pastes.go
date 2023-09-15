@@ -60,7 +60,7 @@ func (dao *PasteDAO) Get(id string) (*Paste, error) {
 
   if err != nil {
     if errors.Is(err, mongo.ErrNoDocuments) {
-      return nil, db.NewPasteNotFoundError(id)
+      return nil, db.NewRecordNotFoundError("paste", id)
     } else {
       return nil, err
     }

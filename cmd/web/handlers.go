@@ -40,7 +40,7 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
 
   paste, err := app.pastes.Get(id)
   if err != nil {
-    if errors.Is(err, db.ErrPasteNotFound) {
+    if errors.Is(err, db.ErrRecordNotFound) {
       app.notFound(w)
     } else {
       app.serverError(w, err)

@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-var ErrPasteNotFound = errors.New("not found")
+var ErrRecordNotFound = errors.New("not found")
 
-func NewPasteNotFoundError(id string) error {
-  return fmt.Errorf("%q: %w", id, ErrPasteNotFound)
+func NewRecordNotFoundError(kind, id string) error {
+  return fmt.Errorf("%s %q: %w", kind, id, ErrRecordNotFound)
 }
