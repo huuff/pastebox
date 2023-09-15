@@ -16,6 +16,7 @@ type application struct {
   errorLog *log.Logger
   infoLog *log.Logger
   pastes *models.PasteDAO
+  users *models.UserDAO
   templateCache map[string]*template.Template
   formDecoder *form.Decoder
   sessionManager *scs.SessionManager
@@ -34,6 +35,7 @@ func newApplication() (application, func()) {
   sessionManager.Store = mongodbstore.New(mongo.Database(db.DatabaseName))
 
   pastes := models.NewPasteDAO(mongo, infoLog)
+  users := models.NewUserDAO(mongo, infoLog)
 
   templateCache, err := newTemplateCache()
   if err != nil {
@@ -44,6 +46,7 @@ func newApplication() (application, func()) {
     infoLog: infoLog,
     errorLog: errorLog,
     pastes: pastes,
+    users: users,
     templateCache: templateCache,
     formDecoder: form.NewDecoder(),
     sessionManager: sessionManager,
