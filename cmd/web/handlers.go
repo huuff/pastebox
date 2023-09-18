@@ -85,12 +85,7 @@ func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) 
   validation := validate.Struct(form)
 
   if !validation.Validate() {
-    form.FieldErrors = lo.MapValues(validation.Errors.All(), func(errs map[string]string, _ string) string {
-      for _, v := range errs {
-        return v
-      }
-      return ""
-    })
+    form.FieldErrors = errorsToMap(validation.Errors)
   }
 
   if len(form.FieldErrors) != 0 {
@@ -111,12 +106,46 @@ func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) 
   http.Redirect(w, r, fmt.Sprintf("/paste/view/%s", id), http.StatusSeeOther)
 }
 
+type userSignupForm struct {
+  Name string `validate:"required" form:"name"`
+  Email string `validate:"required|email" form:"email"`
+  Password string `validate:"required|min_len:8" form:"password"`
+  FieldErrors map[string]string `validate:"-" form:"-"`
+}
+
+// TODO: Please make it pretty
 func (app *application) userSignup(w http.ResponseWriter, r* http.Request) {
-  fmt.Fprintln(w, "Display an HTML form for signing up a new user...")
+  data := app.newTemplateData(r)
+  data.Form = userSignupForm {}
+  app.render(w, http.StatusOK, "signup.gotmpl", data)
 }
 
 func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintln(w, "Create a new user...")
+  var form userSignupForm
+
+  err := app.decodePostForm(r, &form)
+  if err != nil {
+    app.clientError(w, http.StatusBadRequest)
+    return
+  }
+
+  validation := validate.Struct(form)
+  
+  if !validation.Validate() {
+    form.FieldErrors = errorsToMap(validation.Errors)
+  }
+
+
+  if len(form.FieldErrors) != 0 {
+    data := app.newTemplateData(r)
+    data.Form = form
+    app.render(w, http.StatusUnprocessableEntity, "signup.gotmpl", data)
+    return
+  }
+
+  // TODO: Finish it!
+  fmt.Println(w, "Create a new user")
+  
 }
 
 func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {

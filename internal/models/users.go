@@ -28,6 +28,12 @@ func NewUserDAO(mongo *mongo.Client, infoLog *log.Logger) *UserDAO {
 }
 
 func (dao *UserDAO) Insert(name, email, password string) error {
+  //user := User { 
+    //Name: name,
+    //Email: email,
+    //Created: time.Now().Truncate(time.Second),
+  //}
+
   return nil
 }
 
