@@ -142,8 +142,16 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  // TODO: Finish it!
-  fmt.Println(w, "Create a new user")
+  _, err = app.users.Insert(form.Name, form.Email, form.Password)
+  if err != nil {
+    // TODO: Handle duplicate email
+    app.errorLog.Printf(err.Error())
+    app.clientError(w, 400)
+  }
+
+  app.sessionManager.Put(r.Context(), "flash", "Your signup was successful. Please log in.")
+
+  http.Redirect(w, r, "/user/login", http.StatusSeeOther)
   
 }
 

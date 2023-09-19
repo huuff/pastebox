@@ -1,10 +1,12 @@
 package models
 
 import (
+	"context"
 	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
+	"golang.org/x/crypto/bcrypt"
 	"xyz.haff/pastebox/internal/db"
 )
 
@@ -27,14 +29,30 @@ func NewUserDAO(mongo *mongo.Client, infoLog *log.Logger) *UserDAO {
   return &UserDAO { collection, infoLog }
 }
 
-func (dao *UserDAO) Insert(name, email, password string) error {
-  //user := User { 
-    //Name: name,
-    //Email: email,
-    //Created: time.Now().Truncate(time.Second),
-  //}
+func (dao *UserDAO) Insert(name, email, password string) (string, error) {
+  hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 
-  return nil
+  if err != nil {
+    return "", err
+  }
+
+  user := User { 
+    Name: name,
+    Email: email,
+    Created: time.Now().Truncate(time.Second),
+    HashedPassword: hashedPassword,
+  }
+
+  result, err := dao.collection.InsertOne(context.TODO(), user )
+
+  if err != nil {
+    return "", err
+  }
+
+  id := db.GetInsertOneStringId(result)
+  dao.infoLog.Printf("Inserted user %s", id)
+
+  return "", nil
 }
 
 func (dao *UserDAO) Authenticate(email, password string) (int, error) {
