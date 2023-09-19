@@ -113,7 +113,6 @@ type userSignupForm struct {
   FieldErrors map[string]string `validate:"-" form:"-"`
 }
 
-// TODO: Please make it pretty
 func (app *application) userSignup(w http.ResponseWriter, r* http.Request) {
   data := app.newTemplateData(r)
   data.Form = userSignupForm {}

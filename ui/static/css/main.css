@@ -132,7 +132,7 @@ form {
   gap: 0.5rem;
 }
 
-input[type="text"] {
+input[type="text"], input[type="email"], input[type="password"] {
   height: 2rem;
 }
 
@@ -175,3 +175,4 @@ input[type="submit"] {
   color: white;
   margin-bottom: 1.5rem;
 }
+
