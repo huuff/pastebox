@@ -10,6 +10,7 @@ import (
 	"github.com/gookit/validate"
 	"github.com/gorilla/mux"
 	"github.com/samber/lo"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	"xyz.haff/pastebox/internal/db"
 	"xyz.haff/pastebox/internal/models"
@@ -144,9 +145,18 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 
   _, err = app.users.Insert(form.Name, form.Email, form.Password)
   if err != nil {
-    // TODO: Handle duplicate email
-    app.errorLog.Printf(err.Error())
-    app.clientError(w, 400)
+    if mongo.IsDuplicateKeyError(err) {
+      form.FieldErrors = map[string]string {
+       "Email": "Email address is already in use",
+      }
+
+      data := app.newTemplateData(r)
+      data.Form = form
+      app.render(w, http.StatusUnprocessableEntity, "signup.gotmpl", data)
+    } else {
+      app.serverError(w, err)
+    }
+    return
   }
 
   app.sessionManager.Put(r.Context(), "flash", "Your signup was successful. Please log in.")
