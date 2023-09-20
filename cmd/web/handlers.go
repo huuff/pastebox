@@ -165,8 +165,17 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
   
 }
 
+type userLoginForm struct {
+  Email string `form:"email" validate:"required"`
+  Password string `form:"email" validate:"required"`
+  FieldErrors map[string]string `form:"-" validate:"-"`
+  NonFieldErrors []string `form:"-" validate:"-"`
+}
+
 func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintln(w, "Display an HTML form for logging-in a user")
+  data := app.newTemplateData(r)
+  data.Form = userLoginForm{}
+  app.render(w, http.StatusOK, "login.gotmpl", data)
 }
 
 func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
