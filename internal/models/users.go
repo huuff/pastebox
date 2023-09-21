@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -66,8 +67,29 @@ func (dao *UserDAO) Insert(name, email, password string) (string, error) {
   return "", nil
 }
 
-func (dao *UserDAO) Authenticate(email, password string) (int, error) {
-  return 0, nil
+func (dao *UserDAO) Authenticate(email, password string) (string, error) {
+  var user User
+  err := dao.collection.FindOne(context.TODO(), bson.M {
+    "email": email,
+  }).Decode(user)
+
+  if err != nil {
+    if errors.Is(err, mongo.ErrNoDocuments) {
+      return "", db.ErrInvalidCredentials
+    } else {
+      return "", err
+    }
+  }
+
+  if err = bcrypt.CompareHashAndPassword(user.HashedPassword, []byte(password)); err != nil {
+    if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+      return "", db.ErrInvalidCredentials
+    } else {
+      return "", err
+    }
+  }
+
+  return user.ID, nil
 }
 
 func (dao *UserDAO) Exists(id string) (bool, error) {
