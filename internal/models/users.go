@@ -71,7 +71,7 @@ func (dao *UserDAO) Authenticate(email, password string) (string, error) {
   var user User
   err := dao.collection.FindOne(context.TODO(), bson.M {
     "email": email,
-  }).Decode(user)
+  }).Decode(&user)
 
   if err != nil {
     if errors.Is(err, mongo.ErrNoDocuments) {

@@ -167,7 +167,7 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 
 type userLoginForm struct {
   Email string `form:"email" validate:"required"`
-  Password string `form:"email" validate:"required"`
+  Password string `form:"password" validate:"required"`
   FieldErrors map[string]string `form:"-" validate:"-"`
   NonFieldErrors []string `form:"-" validate:"-"`
 }
@@ -179,7 +179,45 @@ func (app *application) userLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
-  fmt.Fprintln(w, "Authenticate and login the user")
+  var form userLoginForm
+
+  if err := app.decodePostForm(r, &form); err != nil {
+    app.clientError(w, http.StatusBadRequest)
+    return
+  }
+
+  validation := validate.Struct(form)
+  if !validation.Validate() {
+    data := app.newTemplateData(r)
+    data.Form = form
+    app.render(w, http.StatusUnprocessableEntity, "login.gotmpl", data)
+    return
+  }
+
+  id, err := app.users.Authenticate(form.Email, form.Password)
+  if err != nil {
+    if errors.Is(err, db.ErrInvalidCredentials) {
+      form.NonFieldErrors = append(form.NonFieldErrors, "Email or password is incorrect")
+
+      data := app.newTemplateData(r)
+      data.Form = form
+      app.render(w, http.StatusUnprocessableEntity, "login.gotmpl", data)
+    } else {
+      app.serverError(w, err)
+    }
+    return
+  }
+
+  if err = app.sessionManager.RenewToken(r.Context()); err != nil {
+    app.serverError(w, err)
+    return
+  }
+
+  app.sessionManager.Put(r.Context(), "authenticatedUserID", id)
+
+  http.Redirect(w, r, "/paste/create", http.StatusSeeOther)
+  
+  
 }
 
 func (app *application) userLogoutPost(w http.ResponseWriter, r *http.Request) {
