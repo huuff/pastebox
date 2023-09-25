@@ -30,7 +30,7 @@ func NewUserDAO(client *mongo.Client, infoLog *log.Logger) *UserDAO {
   collection := client.Database(db.DatabaseName).Collection("users")
 
   _, err := collection.Indexes().CreateOne(context.TODO(), mongo.IndexModel {
-    Keys: bson.D {{ "email", 1 }},
+    Keys: bson.M {"email": 1},
     Options: options.Index().SetUnique(true),
   })
 
