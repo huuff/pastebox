@@ -14,6 +14,7 @@ type templateData struct {
   Pastes []*models.Paste
   Form any
   Flash string
+  IsAuthenticated bool
 }
 
 func humanDate(t time.Time) string {
