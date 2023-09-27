@@ -19,13 +19,15 @@ func (app *application) routes() http.Handler {
 
   dynamic := alice.New(app.sessionManager.LoadAndSave)
 
+  protected := dynamic.Append(app.requireAuthentication)
+
   router.Handle("/", dynamic.ThenFunc(app.home)).
           Methods(http.MethodGet)
   router.Handle("/paste/view/{id}", dynamic.ThenFunc(app.pasteView)).
           Methods(http.MethodGet)
-  router.Handle("/paste/create", dynamic.ThenFunc(app.pasteCreate)).
+  router.Handle("/paste/create", protected.ThenFunc(app.pasteCreate)).
           Methods(http.MethodGet)
-  router.Handle("/paste/create", dynamic.ThenFunc(app.pasteCreatePost)).
+  router.Handle("/paste/create", protected.ThenFunc(app.pasteCreatePost)).
           Methods(http.MethodPost)
   
   router.Handle("/user/signup", dynamic.ThenFunc(app.userSignup)).
@@ -36,7 +38,7 @@ func (app *application) routes() http.Handler {
     Methods(http.MethodGet)
   router.Handle("/user/login", dynamic.ThenFunc(app.userLoginPost)).
     Methods(http.MethodPost)
-  router.Handle("/user/logout", dynamic.ThenFunc(app.userLogoutPost)).
+  router.Handle("/user/logout", protected.ThenFunc(app.userLogoutPost)).
     Methods(http.MethodPost)
 
 
