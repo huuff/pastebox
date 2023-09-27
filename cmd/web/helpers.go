@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"runtime/debug"
 	"time"
+
+	"github.com/justinas/nosurf"
 )
 
 func (app *application) newTemplateData(r *http.Request) *templateData {
@@ -12,6 +14,7 @@ func (app *application) newTemplateData(r *http.Request) *templateData {
     CurrentYear: time.Now().Year(),
     Flash: app.sessionManager.PopString(r.Context(), "flash"),
     IsAuthenticated: app.isAuthenticated(r),
+    CSRFToken: nosurf.Token(r),
   }
 }
 

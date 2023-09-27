@@ -12,6 +12,7 @@ require (
 	github.com/gookit/validate v1.5.1 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/justinas/alice v1.2.0 // indirect
+	github.com/justinas/nosurf v1.1.1 // indirect
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/samber/lo v1.38.1 // indirect

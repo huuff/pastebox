@@ -2,6 +2,7 @@
 
 {{ define "main" }}
 <form action="/paste/create" method="POST">
+  <input type="hidden" name="csrf_token" value="{{.CSRFToken}}"/>
   <div class="form-control">
     <label>Title:</label>
     {{ with .Form.FieldErrors.Title }}
