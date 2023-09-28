@@ -53,10 +53,13 @@ func (dao *PasteDAO) Insert(title string, content string, expires int) (string, 
 }
 
 func (dao *PasteDAO) Get(id string) (*Paste, error) {
-  objectId, _ := primitive.ObjectIDFromHex(id)
+  objectId, err := primitive.ObjectIDFromHex(id)
+  if err != nil {
+    return nil, err
+  }
 
   var result Paste
-  err := dao.collection.FindOne(context.TODO(), bson.M{ "_id": objectId}).Decode(&result)
+  err = dao.collection.FindOne(context.TODO(), bson.M{ "_id": objectId}).Decode(&result)
 
   if err != nil {
     if errors.Is(err, mongo.ErrNoDocuments) {

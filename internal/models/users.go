@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
@@ -93,5 +94,21 @@ func (dao *UserDAO) Authenticate(email, password string) (string, error) {
 }
 
 func (dao *UserDAO) Exists(id string) (bool, error) {
-  return false, nil
+  objectId, err := primitive.ObjectIDFromHex(id)
+  if err != nil {
+    return false, err
+  }
+
+  var user User 
+  err = dao.collection.FindOne(context.TODO(), bson.M { "_id": objectId}).Decode(&user)
+
+  if err != nil {
+    if errors.Is(err, mongo.ErrNoDocuments) {
+      return false, nil
+    } else {
+      return false, err
+    }
+  }
+
+  return true, nil
 }
