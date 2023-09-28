@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+  "context"
 
 	"github.com/justinas/nosurf"
 )
@@ -62,4 +63,31 @@ func noSurf(next http.Handler) http.Handler {
   })
 
   return csrfHandler
+}
+
+func (app *application) authenticate(next http.Handler) http.Handler {
+  return http.HandlerFunc(func(w http.ResponseWriter, r* http.Request) {
+    id := app.sessionManager.GetString(r.Context(), "authenticatedUserID")
+    if id == "" {
+      app.infoLog.Println("No authenticated user id found")
+      next.ServeHTTP(w, r)
+      return
+    }
+
+    exists, err := app.users.Exists(id)
+    if err != nil {
+      app.serverError(w, err)
+      return
+    }
+
+    if exists {
+      ctx := context.WithValue(r.Context(), isAuthenticatedContextKey, true)
+      r = r.WithContext(ctx)
+    } else {
+      app.infoLog.Printf("User %s does not exist", id)
+
+    }
+
+    next.ServeHTTP(w, r)
+  })
 }
