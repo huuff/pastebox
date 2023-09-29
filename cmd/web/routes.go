@@ -1,9 +1,11 @@
 package main
 
 import (
-  "net/http"
-  "github.com/justinas/alice"
-  "github.com/gorilla/mux"
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/justinas/alice"
+	"xyz.haff/pastebox/ui"
 )
 
 func (app *application) routes() http.Handler {
@@ -13,9 +15,11 @@ func (app *application) routes() http.Handler {
     app.notFound(w)
   })
   
-  fileServer := http.FileServer(nonIndexingFileSystem { http.Dir("./ui/static") })
-  router.PathPrefix("/static").
-        Handler(http.StripPrefix("/static", fileServer))
+  fileServer := http.FileServer(http.FS(ui.Files))
+  router.PathPrefix("/static/").
+    Handler(fileServer).
+    Methods(http.MethodGet)
+
 
   dynamic := alice.New(app.sessionManager.LoadAndSave, noSurf, app.authenticate)
 
