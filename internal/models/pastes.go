@@ -34,8 +34,8 @@ func NewPasteDAO(mongo *mongo.Client, infoLog *log.Logger) *PasteDAO {
   return &PasteDAO { collection, infoLog }
 }
 
-func (dao *PasteDAO) Insert(title string, content string, expires int) (string, error) {
-  result, err := dao.collection.InsertOne(context.TODO(), Paste {
+func (dao *PasteDAO) Insert(title string, content string, expires int, ctx context.Context) (string, error) {
+  result, err := dao.collection.InsertOne(ctx, Paste {
     Title: title,
     Content: content,
     Created: time.Now().Truncate(time.Second),
@@ -52,14 +52,14 @@ func (dao *PasteDAO) Insert(title string, content string, expires int) (string, 
   return id, nil
 }
 
-func (dao *PasteDAO) Get(id string) (*Paste, error) {
+func (dao *PasteDAO) Get(id string, ctx context.Context) (*Paste, error) {
   objectId, err := primitive.ObjectIDFromHex(id)
   if err != nil {
     return nil, err
   }
 
   var result Paste
-  err = dao.collection.FindOne(context.TODO(), bson.M{ "_id": objectId}).Decode(&result)
+  err = dao.collection.FindOne(ctx, bson.M{ "_id": objectId}).Decode(&result)
 
   if err != nil {
     if errors.Is(err, mongo.ErrNoDocuments) {
@@ -72,7 +72,7 @@ func (dao *PasteDAO) Get(id string) (*Paste, error) {
   return &result, nil
 }
 
-func (dao *PasteDAO) Latest() ([]Paste, error) {
+func (dao *PasteDAO) Latest(ctx context.Context) ([]Paste, error) {
   opt := options.
           Find().
           SetLimit(10).
@@ -82,14 +82,14 @@ func (dao *PasteDAO) Latest() ([]Paste, error) {
     "expires": bson.M { "$gt": time.Now() },
   }
 
-  cursor, err := dao.collection.Find(context.TODO(), nonExpiredFilter, opt)
+  cursor, err := dao.collection.Find(ctx, nonExpiredFilter, opt)
 
   if err != nil {
     return nil, err
   }
 
   var results []Paste
-  if err = cursor.All(context.TODO(), &results); err != nil {
+  if err = cursor.All(ctx, &results); err != nil {
     return nil, err
   }
 

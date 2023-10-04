@@ -17,7 +17,7 @@ import (
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
-  pastes, err := app.pastes.Latest()
+  pastes, err := app.pastes.Latest(r.Context())
   if err != nil {
     app.serverError(w, err)
     return
@@ -39,7 +39,7 @@ func (app *application) pasteView(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  paste, err := app.pastes.Get(id)
+  paste, err := app.pastes.Get(id, r.Context())
   if err != nil {
     if errors.Is(err, db.ErrRecordNotFound) {
       app.notFound(w)
@@ -96,7 +96,7 @@ func (app *application) pasteCreatePost(w http.ResponseWriter, r *http.Request) 
     return
   }
 
-  id, err := app.pastes.Insert(form.Title, form.Content, form.Expires)
+  id, err := app.pastes.Insert(form.Title, form.Content, form.Expires, r.Context())
   if err != nil {
     app.serverError(w, err)
     return
