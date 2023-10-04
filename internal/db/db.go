@@ -1,11 +1,13 @@
 package db
 
 import (
-  "context"
-  "go.mongodb.org/mongo-driver/bson"
-  "go.mongodb.org/mongo-driver/mongo"
-  "go.mongodb.org/mongo-driver/mongo/options"
-  "log"
+	"context"
+	"log"
+	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // TODO: Pass it from somewhere?
@@ -15,12 +17,17 @@ func ConnectToMongo(infoLogger *log.Logger) (*mongo.Client, func(), error) {
 
   opts := options.Client().ApplyURI(mongoUri).SetServerAPIOptions(serverAPI)
 
-  client, err := mongo.Connect(context.TODO(), opts)
+  timeoutCtx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+  defer cancel()
+  
+  client, err := mongo.Connect(timeoutCtx, opts)
   if err != nil {
     return nil, nil, err
   }
   close := func() {
-    if err = client.Disconnect(context.TODO()); err != nil {
+    timeoutCtx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+    defer cancel()
+    if err = client.Disconnect(timeoutCtx); err != nil {
       panic(err)
     }
   }
