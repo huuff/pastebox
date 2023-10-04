@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"html/template"
 	"log"
 	"os"
+	"time"
 
+	"github.com/alexedwards/scs/mongodbstore"
 	"github.com/alexedwards/scs/v2"
-  "github.com/alexedwards/scs/mongodbstore"
 	"github.com/go-playground/form/v4"
 	"xyz.haff/pastebox/internal/db"
 	"xyz.haff/pastebox/internal/models"
@@ -26,7 +28,10 @@ func newApplication() (application, func()) {
   infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
   errorLog := log.New(os.Stderr, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
 
-  mongo, closeMongo, err := db.ConnectToMongo(infoLog)
+  timeoutCtx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+  defer cancel()
+
+  mongo, closeMongo, err := db.ConnectToMongo(infoLog, timeoutCtx)
   if err != nil {
     errorLog.Fatal(err)
   }
