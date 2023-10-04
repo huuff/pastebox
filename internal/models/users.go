@@ -27,10 +27,10 @@ type UserDAO struct {
   infoLog *log.Logger
 }
 
-func NewUserDAO(client *mongo.Client, infoLog *log.Logger) *UserDAO {
+func NewUserDAO(client *mongo.Client, infoLog *log.Logger, ctx context.Context) *UserDAO {
   collection := client.Database(db.DatabaseName).Collection("users")
 
-  _, err := collection.Indexes().CreateOne(context.TODO(), mongo.IndexModel {
+  _, err := collection.Indexes().CreateOne(ctx, mongo.IndexModel {
     Keys: bson.M {"email": 1},
     Options: options.Index().SetUnique(true),
   })
@@ -42,7 +42,7 @@ func NewUserDAO(client *mongo.Client, infoLog *log.Logger) *UserDAO {
   return &UserDAO { collection, infoLog }
 }
 
-func (dao *UserDAO) Insert(name, email, password string) (string, error) {
+func (dao *UserDAO) Insert(name, email, password string, ctx context.Context) (string, error) {
   hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 
   if err != nil {
@@ -56,7 +56,7 @@ func (dao *UserDAO) Insert(name, email, password string) (string, error) {
     HashedPassword: hashedPassword,
   }
 
-  result, err := dao.collection.InsertOne(context.TODO(), user )
+  result, err := dao.collection.InsertOne(ctx, user )
 
   if err != nil {
     return "", err
@@ -68,9 +68,9 @@ func (dao *UserDAO) Insert(name, email, password string) (string, error) {
   return "", nil
 }
 
-func (dao *UserDAO) Authenticate(email, password string) (string, error) {
+func (dao *UserDAO) Authenticate(email, password string, ctx context.Context) (string, error) {
   var user User
-  err := dao.collection.FindOne(context.TODO(), bson.M {
+  err := dao.collection.FindOne(ctx, bson.M {
     "email": email,
   }).Decode(&user)
 
@@ -93,14 +93,14 @@ func (dao *UserDAO) Authenticate(email, password string) (string, error) {
   return user.ID, nil
 }
 
-func (dao *UserDAO) Exists(id string) (bool, error) {
+func (dao *UserDAO) Exists(id string, ctx context.Context) (bool, error) {
   objectId, err := primitive.ObjectIDFromHex(id)
   if err != nil {
     return false, err
   }
 
   var user User 
-  err = dao.collection.FindOne(context.TODO(), bson.M { "_id": objectId}).Decode(&user)
+  err = dao.collection.FindOne(ctx, bson.M { "_id": objectId}).Decode(&user)
 
   if err != nil {
     if errors.Is(err, mongo.ErrNoDocuments) {

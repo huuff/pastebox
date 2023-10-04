@@ -40,7 +40,7 @@ func newApplication() (application, func()) {
   sessionManager.Store = mongodbstore.New(mongo.Database(db.DatabaseName))
 
   pastes := models.NewPasteDAO(mongo, infoLog)
-  users := models.NewUserDAO(mongo, infoLog)
+  users := models.NewUserDAO(mongo, infoLog, timeoutCtx)
 
   templateCache, err := newTemplateCache()
   if err != nil {

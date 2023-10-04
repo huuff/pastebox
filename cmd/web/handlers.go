@@ -143,7 +143,7 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  _, err = app.users.Insert(form.Name, form.Email, form.Password)
+  _, err = app.users.Insert(form.Name, form.Email, form.Password, r.Context())
   if err != nil {
     if mongo.IsDuplicateKeyError(err) {
       form.FieldErrors = map[string]string {
@@ -194,7 +194,7 @@ func (app *application) userLoginPost(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  id, err := app.users.Authenticate(form.Email, form.Password)
+  id, err := app.users.Authenticate(form.Email, form.Password, r.Context())
   if err != nil {
     if errors.Is(err, db.ErrInvalidCredentials) {
       form.NonFieldErrors = append(form.NonFieldErrors, "Email or password is incorrect")
