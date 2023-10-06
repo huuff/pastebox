@@ -271,3 +271,7 @@ func (app *application) decodePostForm(r *http.Request, dst any) error {
 
   return nil
 }
+
+func ping(w http.ResponseWriter, r *http.Request) {
+  w.Write([]byte("OK"))
+}
