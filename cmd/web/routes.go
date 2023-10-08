@@ -45,6 +45,8 @@ func (app *application) routes() http.Handler {
   router.Handle("/user/logout", protected.ThenFunc(app.userLogoutPost)).
     Methods(http.MethodPost)
 
+  router.Handle("/ping", http.HandlerFunc(ping)).Methods(http.MethodGet)
+
 
   standard := alice.New(app.recoverPanic, app.logRequest, secureHeaders)
 
