@@ -2,16 +2,23 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"log"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // TODO: Pass it from somewhere?
-const mongoUri = "mongodb://root:pass@localhost:27017"
+//const mongoUri = "mongodb://root:pass@localhost:27017"
+const username = "root"
+const password = "pass"
+const host = "localhost"
+const port = "27017"
 func ConnectToMongo(infoLogger *log.Logger, ctx context.Context) (*mongo.Client, func(), error) {
   serverAPI := options.ServerAPI(options.ServerAPIVersion1)
+  mongoUri := fmt.Sprintf("mongodb://%s:%s@%s:%s", username, password, host, port)
 
   opts := options.Client().ApplyURI(mongoUri).SetServerAPIOptions(serverAPI)
 
@@ -30,7 +37,6 @@ func ConnectToMongo(infoLogger *log.Logger, ctx context.Context) (*mongo.Client,
 	  close()	
     return nil, nil, err
 	}
-  // TODO: ooops, logging the password
-  infoLogger.Printf("Connected to mongo on %s", mongoUri)
+  infoLogger.Printf("Connected to mongo on mongodb://%s:%s", host, port)
   return client, close, nil
 }
