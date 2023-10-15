@@ -12,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 	"xyz.haff/pastebox/internal/db"
+  customError "xyz.haff/pastebox/internal/errors"
 )
 
 type User struct {
@@ -59,6 +60,9 @@ func (dao *UserDAO) Insert(name, email, password string, ctx context.Context) (s
   result, err := dao.collection.InsertOne(ctx, user )
 
   if err != nil {
+    if mongo.IsDuplicateKeyError(err) {
+      return "", customError.DuplicateEmailError
+    }
     return "", err
   }
 

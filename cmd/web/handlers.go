@@ -10,10 +10,10 @@ import (
 	"github.com/gookit/validate"
 	"github.com/gorilla/mux"
 	"github.com/samber/lo"
-	"go.mongodb.org/mongo-driver/mongo"
 
 	"xyz.haff/pastebox/internal/db"
 	"xyz.haff/pastebox/internal/models"
+  customErrors "xyz.haff/pastebox/internal/errors"
 )
 
 func (app *application) home(w http.ResponseWriter, r *http.Request) {
@@ -145,7 +145,7 @@ func (app *application) userSignupPost(w http.ResponseWriter, r *http.Request) {
 
   _, err = app.users.Insert(form.Name, form.Email, form.Password, r.Context())
   if err != nil {
-    if mongo.IsDuplicateKeyError(err) {
+    if err == customErrors.DuplicateEmailError {
       form.FieldErrors = map[string]string {
        "Email": "Email address is already in use",
       }
