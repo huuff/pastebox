@@ -23,6 +23,12 @@ type User struct {
   Created time.Time `bson:"created"`
 }
 
+type UserDAOInterface interface {
+  Insert(name, email, password string, ctx context.Context) (string, error)
+  Authenticate(email, password string, ctx context.Context) (string, error)
+  Exists(id string, ctx context.Context) (bool, error)
+}
+
 type UserDAO struct {
   collection *mongo.Collection
   infoLog *log.Logger

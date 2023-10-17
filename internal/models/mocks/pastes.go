@@ -5,6 +5,7 @@ import (
 
 	"xyz.haff/pastebox/internal/db"
 	"xyz.haff/pastebox/internal/models"
+  "context"
 )
 
 var mockPaste = &models.Paste{
@@ -17,11 +18,11 @@ var mockPaste = &models.Paste{
 
 type PasteDAO struct {}
 
-func (m *PasteDAO) Insert(title string, content string, expires int) (string, error) {
+func (m *PasteDAO) Insert(title string, content string, expires int, ctx context.Context) (string, error) {
   return "2", nil
 }
 
-func (m *PasteDAO) Get(id string) (*models.Paste, error) {
+func (m *PasteDAO) Get(id string, ctx context.Context) (*models.Paste, error) {
   switch id {
   case "1":
     return mockPaste, nil
@@ -30,7 +31,7 @@ func (m *PasteDAO) Get(id string) (*models.Paste, error) {
   }
 }
 
-func (m *PasteDAO) Latest() ([]*models.Paste, error) {
-  return []*models.Paste{mockPaste}, nil
+func (m *PasteDAO) Latest(ctx context.Context) ([]models.Paste, error) {
+  return []models.Paste{*mockPaste}, nil
 }
 

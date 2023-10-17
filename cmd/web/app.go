@@ -17,8 +17,8 @@ import (
 type application struct {
   errorLog *log.Logger
   infoLog *log.Logger
-  pastes *models.PasteDAO
-  users *models.UserDAO
+  pastes models.PasteDAOInterface
+  users models.UserDAOInterface
   templateCache map[string]*template.Template
   formDecoder *form.Decoder
   sessionManager *scs.SessionManager

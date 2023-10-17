@@ -23,6 +23,12 @@ type Paste struct {
   Expires time.Time `bson:"expires"`
 }
 
+type PasteDAOInterface interface {
+  Insert(title string, content string, expires int, ctx context.Context) (string, error)
+  Get(id string, ctx context.Context) (*Paste, error)
+  Latest(ctx context.Context) ([]Paste, error)
+}
+
 type PasteDAO struct {
   collection *mongo.Collection
   infoLog *log.Logger
