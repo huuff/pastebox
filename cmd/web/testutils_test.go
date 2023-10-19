@@ -7,8 +7,10 @@ import (
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
+	"regexp"
 	"testing"
 	"time"
+  "html"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-playground/form/v4"
@@ -73,4 +75,16 @@ func (ts *testServer) get(t *testing.T, urlPath string) (int, http.Header, strin
   bytes.TrimSpace(body)
 
   return rs.StatusCode, rs.Header, string(body)
+}
+
+var csrfTokenRX = regexp.MustCompile(`<input type="hidden" name="csrf_token" value="(.+)">`)
+
+func extractCSRFToken(t *testing.T, body string) string {
+  matches := csrfTokenRX.FindStringSubmatch(body)
+
+  if len(matches) < 2 {
+    t.Fatal("no csrf token found in body")
+  }
+
+  return html.UnescapeString(string(matches[1]))
 }
